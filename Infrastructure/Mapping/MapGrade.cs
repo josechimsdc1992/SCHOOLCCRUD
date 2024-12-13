@@ -16,6 +16,11 @@ namespace Infrastructure.Mapping
         {
             builder.ToTable("Grade");
             builder.HasKey(e => e.IdGrade);
+
+            builder
+          .HasOne(e => e.Teacher)
+          .WithMany(x => x.Grades)
+          .HasForeignKey(z => z.IdGrades);
         }
     }
 }

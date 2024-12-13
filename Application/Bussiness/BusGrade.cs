@@ -85,6 +85,9 @@ namespace Application.Bussiness
             try
             {
                 var resData = await _datGrade.DGet(iKey);
+                var resDetail = await _datstudentGrade.DGetByGrade(iKey);
+                resData.Result.StudentGrades=resDetail.Result;
+
                 response.SetSuccess(resData.Result);
             }
             catch (Exception ex)

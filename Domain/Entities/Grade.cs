@@ -12,5 +12,7 @@ namespace Domain.Entities
         public string Name { get; set; }
         public int IdTeacher { get; set; }
         public Teacher Teacher { get; set; }
+
+        public ICollection<StudentGrade> StudentGrades { get; set; }
     }
 }

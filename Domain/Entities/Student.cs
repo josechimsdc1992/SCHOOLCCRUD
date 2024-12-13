@@ -13,5 +13,7 @@ namespace Domain.Entities
         public string SurName { get; set; }
         public char Genero { get; set; }
         public DateTime Date {get;set;}
+
+        public ICollection<EntGrade> Grades { get; set; }
     }
 }
