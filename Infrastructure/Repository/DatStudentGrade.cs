@@ -77,6 +77,21 @@ namespace Infrastructure.Repository
 
             return response;
         }
+        public async Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade,int IdStudent)
+        {
+            var response = new ResultResponse<StudentGrade>();
+            try
+            {
+                var query = await _dbContext.StudentGrades.SingleOrDefaultAsync(u => u.IdStudentGrade == iKey && u.IdGrade== IdGrade);
+                response.SetSucesss(query);
+            }
+            catch (Exception ex)
+            {
+                response.SetError(ex.Message);
+            }
+
+            return response;
+        }
 
         public async Task<ResultResponse<StudentGrade>> DSave(StudentGrade newItem)
         {

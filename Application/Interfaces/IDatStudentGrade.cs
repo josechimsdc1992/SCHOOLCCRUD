@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Cummon;
+using Application.Interfaces;
 
 using Domain.Entities;
 
@@ -12,6 +13,6 @@ namespace Interfaces
 {
     public interface IDatStudentGrade:IDatBase<StudentGrade>
     {
-
+        Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade, int IdStudent);
     }
 }

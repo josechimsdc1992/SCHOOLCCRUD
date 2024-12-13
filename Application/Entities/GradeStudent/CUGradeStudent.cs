@@ -4,16 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace Application.Entities.GradeStudent
 {
-    public class StudentGrade
+    public class CUGradeStudent
     {
         public int IdStudentGrade { get; set; }
         public int IdGrade { get; set; }
         public int IdStudent { get; set; }
         public string Grupo { get; set; }
-
-        public Student Student { get; set; }
-        public Grade Grade { get; set; }
     }
 }

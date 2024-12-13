@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Application.Bussiness;
+using Application.Repository;
+using Microsoft.Extensions.DependencyInjection;
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-
+        services.AddScoped<IBusGrade, BusGrade>();
+        services.AddScoped<IBusStudent, BusStudent>();
+        services.AddScoped<IBusTeacher, BusTeacher>();
 
         return services;
     }
