@@ -2,8 +2,16 @@
 using Application.Entities.Grade;
 using Application.Entities.Student;
 using Application.Repository;
+
+using AutoMapper;
+
+using Domain.Entities;
+
 using Interfaces;
 using Interfacess;
+
+using Microsoft.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +26,14 @@ namespace Application.Bussiness
         private readonly IDatGrade _datGrade;
         private readonly IDatStudentGrade _datstudentGrade;
         private readonly IDatStudent _datstudent;
-        public BusGrade(ILogger<BusGrade> logger, IDatGrade datGrade, IDatStudentGrade datStudentGrade, IDatStudent student)
+        private readonly IMapper _mapper;
+        public BusGrade(ILogger<BusGrade> logger, IDatGrade datGrade, IDatStudentGrade datStudentGrade, IDatStudent datstudent,IMapper mapper)
         {
             this._logger = logger;
             this._datGrade = datGrade;
             this._datstudentGrade = datStudentGrade;
-            this._datstudent = _datstudent;
+            this._datstudent = datstudent;
+            this._mapper = mapper;
         }
         public async Task<ResultResponse<EntGrade>> BCreate(CUGrade createModel)
         {
@@ -32,9 +42,7 @@ namespace Application.Bussiness
 
             try
             {
-                Grade entEntity = new Grade();
-                entEntity.Name =createModel.Name;
-                entEntity.IdTeacher = createModel.IdTeacher;
+                Grade entEntity = _mapper.Map<Grade>(createModel);
                 var resp = await _datGrade.DSave(entEntity);
 
 
@@ -44,7 +52,7 @@ namespace Application.Bussiness
                 }
                 else
                 {
-                    response.SetSucesss(entEntity);
+                    response.SetSucesss(_mapper.Map<EntGrade>(resp.Result));
                 }
             }
             catch (Exception ex)
@@ -55,7 +63,7 @@ namespace Application.Bussiness
             return response;
         }
 
-        public async Task<ResultResponse<bool>> BDelete(Guid iKey)
+        public async Task<ResultResponse<bool>> BDelete(int iKey)
         {
             ResultResponse<bool> response = new ResultResponse<bool>();
             string metodo = nameof(this.BDelete);
@@ -67,7 +75,7 @@ namespace Application.Bussiness
                 {
                     response.SetError("No se ha borrado");
                 }
-                response.SetSuccess(response.Result);
+                response.SetSucesss(response.Result);
             }
             catch (Exception ex)
             {
@@ -77,9 +85,9 @@ namespace Application.Bussiness
             return response;
         }
 
-        public async Task<ResultResponse<EntGrade>> BGet(Guid iKey)
+        public async Task<ResultResponse<EntGrade>> BGet(int iKey)
         {
-            ResultResponse<EntGrade> response = new ResultResponse<EntPaquete>();
+            ResultResponse<EntGrade> response = new ResultResponse<EntGrade>();
             string metodo = nameof(this.BGet);
 
             try
@@ -88,7 +96,7 @@ namespace Application.Bussiness
                 var resDetail = await _datstudentGrade.DGetByGrade(iKey);
                 resData.Result.StudentGrades=resDetail.Result;
 
-                response.SetSuccess(resData.Result);
+                response.SetSucesss(_mapper.Map<EntGrade>(resData.Result));
             }
             catch (Exception ex)
             {
@@ -105,7 +113,8 @@ namespace Application.Bussiness
             try
             {
                 var resData = await _datGrade.DGet();
-                response.SetSuccess(resData.Result);
+
+                response.SetSucesss(_mapper.Map<List<EntGrade>>(resData.Result));
             }
             catch (Exception ex)
             {
@@ -122,10 +131,7 @@ namespace Application.Bussiness
 
             try
             {
-                Grade entEntity = new Grade();
-                entEntity.IdGrade= createModel.IdGrade;
-                entEntity.Name = createModel.Name;
-                entEntity.IdTeacher = createModel.IdTeacher;
+                Grade entEntity = _mapper.Map<Grade>(updateModel); 
                 var resp = await _datGrade.DUpdate(entEntity);
 
 
@@ -135,7 +141,7 @@ namespace Application.Bussiness
                 }
                 else
                 {
-                    response.SetSuccess(entEntity);
+                    response.SetSucesss(_mapper.Map<EntGrade>(updateModel));
                 }
             }
             catch (Exception ex)
@@ -145,39 +151,38 @@ namespace Application.Bussiness
 
             return response;
         }
-        public async Task<ResultResponse<bool>> BAddStudent(int IdGrade, int IdStudent)
+        public async Task<ResultResponse<bool>> BAddStudent(CUGradeStudent gradeStudent)
         {
             ResultResponse<bool> response = new ResultResponse<bool>();
             string metodo = nameof(this.BDelete);
 
             try
             {
-                Grade grade= _datGrade.DGet(IdGrade);
-                if (grade == null)
+                ResultResponse<Grade> resGrade=await _datGrade.DGet(gradeStudent.IdGrade);
+                if (resGrade.Result == null)
                 {
                     //Error
                 }
-                Student student = await _datstudent.DGet(IdStudent);
+                ResultResponse<Student> student = await _datstudent.DGet(gradeStudent.IdStudent);
                 if (student == null)
                 {
                     //error
                 }
 
 
-                StudentGrade studentGrade = _datstudentGrade.DGetByGradeStudent(grade.IdGrade, student.IdStudent);
-                if (studentGrade != null)
+                ResultResponse<StudentGrade> resStudentGrade =await _datstudentGrade.DGetByGradeStudent(gradeStudent.IdGrade,   gradeStudent.IdStudent,gradeStudent.Grupo);
+                if (resStudentGrade.Result != null)
                 {
                     //error
                 }
-                StudentGrade studentGrade = new StudentGrade();
-                studentGrade.IdGrade= grade.IdGrade;
-                studentGrade.IdStudent = student.IdStudent;
+                StudentGrade studentGrade = _mapper.Map<StudentGrade>(gradeStudent);
                  var resCreate= _datstudentGrade.DSave(studentGrade);
                 if (!response.Result)
                 {
                     response.SetError("No se ha borrado");
+                    return response;
                 }
-                response.SetSuccess(response.Result);
+                response.SetSucesss(true);
             }
             catch (Exception ex)
             {
@@ -186,21 +191,26 @@ namespace Application.Bussiness
 
             return response;
         }
-        public async Task<ResultResponse<bool>> BRemoveStudent(int IdGrade, int IdStudent)
+        public async Task<ResultResponse<bool>> BRemoveStudent(CUGradeStudent gradeStudent)
         {
             ResultResponse<bool> response = new ResultResponse<bool>();
             string metodo = nameof(this.BDelete);
 
             try
             {
-                StudentGrade studentGrade = _datstudentGrade.DGetByGradeStudent(grade.IdGrade, student.IdStudent);
-                response = await _datstudentGrade.DDelete(studentGrade.idstudentGrade);
+                ResultResponse<StudentGrade> resStudentGrade =await _datstudentGrade.DGetByGradeStudent(gradeStudent.IdGrade, gradeStudent.IdStudent,gradeStudent.Grupo);
+                if(!response.HasError && response.Result!=null)
+                {
+                    response = await _datstudentGrade.DDelete(resStudentGrade.Result.IdStudentGrade);
+                }
+                
 
                 if (!response.Result)
                 {
                     response.SetError("No se ha borrado");
+                    return response;
                 }
-                response.SetSuccess(response.Result);
+                response.SetSucesss(true);
             }
             catch (Exception ex)
             {

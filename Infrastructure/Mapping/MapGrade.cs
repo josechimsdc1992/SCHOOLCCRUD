@@ -20,7 +20,7 @@ namespace Infrastructure.Mapping
             builder
           .HasOne(e => e.Teacher)
           .WithMany(x => x.Grades)
-          .HasForeignKey(z => z.IdGrades);
+          .HasForeignKey(z => z.IdTeacher);
         }
     }
 }

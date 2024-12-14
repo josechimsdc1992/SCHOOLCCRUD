@@ -2,8 +2,16 @@
 using Application.Entities.Grade;
 using Application.Entities.Teacher;
 using Application.Repository;
+
+using AutoMapper;
+
+using Domain.Entities;
+
 using Interfaces;
 using Interfacess;
+
+using Microsoft.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +24,12 @@ namespace Application.Bussiness
     {
         private readonly ILogger<BusTeacher> _logger;
         private readonly IDatTeacher _datTeacher;
-        public BusTeacher(ILogger<BusTeacher> logger, IDatTeacher datTeacher)
+        private readonly IMapper _mapper;
+        public BusTeacher(ILogger<BusTeacher> logger, IDatTeacher datTeacher,IMapper mapper)
         {
             this._logger = logger;
             this._datTeacher = datTeacher;
+            this._mapper = mapper;
         }
         public async Task<ResultResponse<EntTeacher>> BCreate(CUTeacher createModel)
         {
@@ -28,9 +38,7 @@ namespace Application.Bussiness
 
             try
             {
-                Teacher entEntity = new Teacher();
-                entEntity.Name = createModel.Name;
-                entEntity.IdTeacher = createModel.IdTeacher;
+                Teacher entEntity = _mapper.Map<Teacher>(createModel);
                 var resp = await _datTeacher.DSave(entEntity);
 
 
@@ -40,7 +48,7 @@ namespace Application.Bussiness
                 }
                 else
                 {
-                    response.SetSucesss(entEntity);
+                    response.SetSucesss(_mapper.Map<EntTeacher>(resp.Result));
                 }
             }
             catch (Exception ex)
@@ -51,7 +59,7 @@ namespace Application.Bussiness
             return response;
         }
 
-        public async Task<ResultResponse<bool>> BDelete(Guid iKey)
+        public async Task<ResultResponse<bool>> BDelete(int iKey)
         {
             ResultResponse<bool> response = new ResultResponse<bool>();
             string metodo = nameof(this.BDelete);
@@ -62,8 +70,9 @@ namespace Application.Bussiness
                 if (!response.Result)
                 {
                     response.SetError("No se ha borrado");
+                    return response;
                 }
-                response.SetSuccess(response.Result);
+                response.SetSucesss(true);
             }
             catch (Exception ex)
             {
@@ -73,7 +82,7 @@ namespace Application.Bussiness
             return response;
         }
 
-        public async Task<ResultResponse<EntTeacher>> BGet(Guid iKey)
+        public async Task<ResultResponse<EntTeacher>> BGet(int iKey)
         {
             ResultResponse<EntTeacher> response = new ResultResponse<EntTeacher>();
             string metodo = nameof(this.BGet);
@@ -81,7 +90,7 @@ namespace Application.Bussiness
             try
             {
                 var resData = await _datTeacher.DGet(iKey);
-                response.SetSuccess(resData.Result);
+                response.SetSucesss(_mapper.Map<EntTeacher>(resData.Result));
             }
             catch (Exception ex)
             {
@@ -98,7 +107,7 @@ namespace Application.Bussiness
             try
             {
                 var resData = await _datTeacher.DGet();
-                response.SetSuccess(resData.Result);
+                response.SetSucesss(_mapper.Map<List<EntTeacher>>(resData.Result));
             }
             catch (Exception ex)
             {
@@ -115,10 +124,7 @@ namespace Application.Bussiness
 
             try
             {
-                Teacher entEntity = new Teacher();
-                entEntity.IdGrade = createModel.IdGrade;
-                entEntity.Name = createModel.Name;
-                entEntity.IdTeacher = createModel.IdTeacher;
+                Teacher entEntity = _mapper.Map<Teacher>(updateModel);
                 var resp = await _datTeacher.DUpdate(entEntity);
 
 
@@ -128,7 +134,7 @@ namespace Application.Bussiness
                 }
                 else
                 {
-                    response.SetSuccess(entEntity);
+                    response.SetSucesss(_mapper.Map<EntTeacher>(updateModel));
                 }
             }
             catch (Exception ex)

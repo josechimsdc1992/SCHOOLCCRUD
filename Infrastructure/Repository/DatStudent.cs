@@ -36,6 +36,7 @@ namespace Infrastructure.Repository
                 if (entity != null)
                 {
                     _dbContext.Students.Remove(entity);
+                    _dbContext.SaveChanges();
                     response.SetSucesss(true);
                 }
 
@@ -128,6 +129,9 @@ namespace Infrastructure.Repository
             {
                 _dbContext.Students.Attach(entity);
                 var entry = _dbContext.Entry(entity);
+                entry.Property(e => e.Name).IsModified = true;
+                entry.Property(e => e.SurName).IsModified = true;
+                entry.Property(e => e.Date).IsModified = true;
                 bool IsModified = entry.Properties.Where(e => e.IsModified).Count() > 0;
                 if (IsModified)
                 {

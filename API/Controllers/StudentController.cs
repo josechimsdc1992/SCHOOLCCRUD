@@ -1,62 +1,64 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Cummon;
+using Application.Entities.Student;
+using Application.Entities.Validation;
+using Application.Repository;
+
+using FluentValidation.Results;
+
+using Interfaces;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[student]")]
+    [Route("/student")]
     public class StudentController : ControllerBase
     {
         private readonly ILogger<StudentController> _logger;
-        private readonly IDatStudent _datStudent;
+        private readonly IBusStudent _busStudent;
 
-        public StudentController(ILogger<StudentController> logger, IDatStudent datStudent)
+        public StudentController(ILogger<StudentController> logger, IBusStudent busStudent)
         {
             _logger = logger;
-            _datStudent = datStudent;
+            _busStudent = busStudent;
         }
 
         [HttpPost]
-        [SwaggerOperation(Summary = "Add or update Student",
-            Description = "Add or update Student dependency on Student")]
+        //[SwaggerOperation(Summary = "Add or update Student",
+        //    Description = "Add or update Student dependency on Student")]
         public async Task<ActionResult<ResultResponse<EntStudent>>> Post(CUStudent request)
         {
             ResultResponse<EntStudent> response = new ResultResponse<EntStudent>();
 
             try
             {
-                var validator = new EntValidatorStudent();
+                var validator = new EntValidadorStudent();
                 ValidationResult result = validator.Validate(request);
                 if (result.IsValid)
                 {
                     if (request.IdStudent == 0)
                     {
-                        EntStudent ent = new EntStudent();
-                        ent.Name = request.Name;
-                        ent.IdTeacher = request.IdTeacher;
-                        ResultResponse<EntStudent> res = await _busStudent.BCreate(ent);
+                        ResultResponse<EntStudent> res = await _busStudent.BCreate(request);
                         if (!res.HasError)
                         {
-                            response.SetSuccess(res.Result);
+                            response.SetSucesss(res.Result);
                         }
                         else
                         {
-                            response.SetError(res.Message);
+                            response.SetError(res.Mensaje);
                         }
                     }
                     else
                     {
-                        EntStudent ent = new EntStudent();
-                        ent.IdStudent = request.IdStudent;
-                        ent.Name = request.Name;
-                        ent.SurName = request.SurName;
-                        ResultResponse<EntStudent> res = await _busStudent.BUpdate(ent);
+                        ResultResponse<EntStudent> res = await _busStudent.BUpdate(request);
                         if (!res.HasError)
                         {
-                            response.SetSuccess(res.Result);
+                            response.SetSucesss(res.Result);
                         }
                         else
                         {
-                            response.SetError(res.Message);
+                            response.SetError(res.Mensaje);
                         }
                     }
 
@@ -75,8 +77,8 @@ namespace API.Controllers
 
         }
 
-        [SwaggerOperation(Summary = "Lista de Student",
-            Description = "Regresa una lista de Student")]
+        //[SwaggerOperation(Summary = "Lista de Student",
+        //    Description = "Regresa una lista de Student")]
         [HttpGet("list")]
         public async Task<ActionResult<ResultResponse<dynamic>>> GetAll()
         {
@@ -86,22 +88,18 @@ namespace API.Controllers
             try
             {
                 var temp = await _busStudent.BGetAll();
-                response.Result = temp.Result;
-                response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.SetSucesss(temp.Result);
             }
             catch (Exception ex)
             {
-                response.ErrorCode = metodo.iCodigoError;
-                response.SetError(ex);
+                response.SetError(ex.Message);
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        [SwaggerOperation(Summary = "Get one Student",
-            Description = "Get one Student")]
+        //[SwaggerOperation(Summary = "Get one Student",
+        //    Description = "Get one Student")]
         [HttpGet("{IdStudent}")]
         public async Task<ActionResult<ResultResponse<dynamic>>> Get(int IdStudent)
         {
@@ -113,20 +111,20 @@ namespace API.Controllers
                 var temp = await _busStudent.BGet(IdStudent);
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        [SwaggerOperation(Summary = "Delete Student",
-           Description = "Delete Grade by IdStudent")]
+        //[SwaggerOperation(Summary = "Delete Student",
+        //   Description = "Delete Grade by IdStudent")]
         [HttpDelete("{IdStudent}")]
-        public async Task<ActionResult<IMDResponse<dynamic>>> Delete(int IdStudent)
+        public async Task<ActionResult<ResultResponse<dynamic>>> Delete(int IdStudent)
         {
             ResultResponse<object> response = new ResultResponse<object>();
 
@@ -135,14 +133,14 @@ namespace API.Controllers
                 var temp = await _busStudent.BDelete(IdStudent);
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
     }

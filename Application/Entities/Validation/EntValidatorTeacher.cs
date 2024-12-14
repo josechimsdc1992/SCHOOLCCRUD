@@ -1,5 +1,8 @@
 ﻿using Application.Entities.Student;
 using Application.Entities.Teacher;
+
+using FluentValidation;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +15,6 @@ namespace Application.Entities.Validation
     {
         public EntValidatorTeacher()
         {
-            RuleFor(entity => entity.IdTeacher)
-                       .NotEmpty()
-                       .WithMessage("IdStudent es requerido");
 
             RuleFor(entity => entity.Name)
                     .NotEmpty()

@@ -1,4 +1,7 @@
 ﻿using Application.Entities.Grade;
+
+using FluentValidation;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +12,7 @@ namespace Application.Entities.Validation
 {
     public class EntValidadorGradeStudent : AbstractValidator<CUGradeStudent>
     {
-        EntValidadorGradeStudent()
+        public EntValidadorGradeStudent()
         {
             RuleFor(entity => entity.IdGrade)
                    .NotEmpty()
@@ -18,6 +21,9 @@ namespace Application.Entities.Validation
             RuleFor(entity => entity.IdStudent)
                    .NotEmpty()
                    .WithMessage("IdStudent es requerido");
+            RuleFor(entity => entity.Grupo)
+                   .NotEmpty()
+                   .WithMessage("Grupo es requerido");
 
 
 

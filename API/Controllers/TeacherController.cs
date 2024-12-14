@@ -1,24 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Cummon;
+using Application.Entities.Teacher;
+using Application.Entities.Validation;
+using Application.Repository;
+
+using FluentValidation.Results;
+
+using Interfaces;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[teacher]")]
+    [Route("/teacher")]
     public class TeacherController : ControllerBase
     {
         
         private readonly ILogger<TeacherController> _logger;
-        private readonly IDatTeacher _datTeacher;
+        private readonly IBusTeacher _busTeacher;
 
-        public TeacherController(ILogger<TeacherController> logger, IDatTeacher datTeacher)
+        public TeacherController(ILogger<TeacherController> logger, IBusTeacher busTeacher)
         {
             _logger = logger;
-            _datTeacher = datTeacher;
+            _busTeacher = busTeacher;
         }
         [HttpPost]
-        [SwaggerOperation(Summary = "Add or update Teacher",
-            Description = "Add or update Teache dependency on IdTeacher")]
-        [IMDMetodo(20231026100640, 20231026100652)]
+        //[SwaggerOperation(Summary = "Add or update Teacher",
+        //    Description = "Add or update Teache dependency on IdTeacher")]
         public async Task<ActionResult<ResultResponse<EntTeacher>>> Post(CUTeacher request)
         {
             ResultResponse<EntTeacher> response = new ResultResponse<EntTeacher>();
@@ -34,29 +42,26 @@ namespace API.Controllers
                         EntTeacher ent = new EntTeacher();
                         ent.Name = request.Name;
                         ent.SurName = request.SurName;
-                        ResultResponse<EntTeacher> res = await _busTeacher.BCreate(ent);
+                        ResultResponse<EntTeacher> res = await _busTeacher.BCreate(request);
                         if (!res.HasError)
                         {
-                            response.SetSuccess(res.Result);
+                            response.SetSucesss(res.Result);
                         }
                         else
                         {
-                            response.SetError(res.Message);
+                            response.SetError(res.Mensaje);
                         }
                     }
                     else
                     {
-                        EntTeacher ent = new EntTeacher();
-                        ent.Name = request.Name;
-                        ent.SurName = request.SurName;
-                        ResultResponse<EntTeacher> res = await _busTeacher.BUpdate(ent);
+                        ResultResponse<EntTeacher> res = await _busTeacher.BUpdate(request);
                         if (!res.HasError)
                         {
-                            response.SetSuccess(res.Result);
+                            response.SetSucesss(res.Result);
                         }
                         else
                         {
-                            response.SetError(res.Message);
+                            response.SetError(res.Mensaje);
                         }
                     }
 
@@ -75,10 +80,9 @@ namespace API.Controllers
 
         }
 
-        [SwaggerOperation(Summary = "Lista de Teacher",
-            Description = "Regresa una lista de Teacher")]
+        //[SwaggerOperation(Summary = "Lista de Teacher",
+        //    Description = "Regresa una lista de Teacher")]
         [HttpGet("list")]
-        [IMDMetodo(67823462368441, 67823462367664)]
         public async Task<ActionResult<ResultResponse<dynamic>>> GetAll()
         {
             ResultResponse<object> response = new ResultResponse<object>();
@@ -89,22 +93,19 @@ namespace API.Controllers
                 var temp = await _busTeacher.BGetAll();
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
-                response.ErrorCode = metodo.iCodigoError;
-                response.SetError(ex);
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        [SwaggerOperation(Summary = "Get one Teacher",
-            Description = "Get one Teacher")]
+        //[SwaggerOperation(Summary = "Get one Teacher",
+        //    Description = "Get one Teacher")]
         [HttpGet("{IdTeacher}")]
-        [IMDMetodo(67823462259630, 67823462258830)]
         public async Task<ActionResult<ResultResponse<dynamic>>> Get(int IdTeacher)
         {
             ResultResponse<object> response = new ResultResponse<object>();
@@ -115,18 +116,18 @@ namespace API.Controllers
                 var temp = await _busTeacher.BGet(IdTeacher);
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        [SwaggerOperation(Summary = "Delete Teacher",
-           Description = "Delete Teacher by IdTeacher")]
+        //[SwaggerOperation(Summary = "Delete Teacher",
+        //   Description = "Delete Teacher by IdTeacher")]
         [HttpDelete("{IdTeacher}")]
         public async Task<ActionResult<ResultResponse<dynamic>>> Delete(int IdTeacher)
         {
@@ -137,14 +138,14 @@ namespace API.Controllers
                 var temp = await _busTeacher.BDelete(IdTeacher);
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
     }
 }

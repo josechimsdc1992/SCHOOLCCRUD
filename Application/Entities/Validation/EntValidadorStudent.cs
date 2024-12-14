@@ -1,4 +1,7 @@
 ﻿using Application.Entities.Student;
+
+using FluentValidation;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +12,7 @@ namespace Application.Entities.Validation
 {
     public class EntValidadorStudent:AbstractValidator<CUStudent>
     {
-        EntValidadorStudent() {
-            RuleFor(entity => entity.IdStudent)
-                   .NotEmpty()
-                   .WithMessage("IdStudent es requerido");
+       public EntValidadorStudent() {
 
             RuleFor(entity => entity.Name)
                    .NotEmpty()
@@ -28,7 +28,7 @@ namespace Application.Entities.Validation
 
             RuleFor(entity => entity.Date)
                    .NotEmpty()
-                   .WithMessage("SurName es requerido");
+                   .WithMessage("Date es requerido");
         }
     }
 }

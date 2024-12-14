@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AutoMapper;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +12,14 @@ namespace Application.Entities.Grade
     {
         public int IdGrade { get; set; }
         public int IdStudent { get; set; }
+        public string Grupo { get; set; }
+        public class Mapping : Profile
+        {
+            public Mapping()
+            {
+                CreateMap<Domain.Entities.StudentGrade, CUGradeStudent>();
+                CreateMap<CUGradeStudent, Domain.Entities.StudentGrade>();
+            }
+        }
     }
 }

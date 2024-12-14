@@ -1,4 +1,12 @@
-﻿using Domain.Entities;
+﻿using Application.Cummon;
+using Application.Entities.Grade;
+using Application.Entities.Validation;
+using Application.Repository;
+
+using Domain.Entities;
+
+using FluentValidation.Results;
+
 using Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +26,8 @@ namespace API.Controllers
             _busGrade = busGrade;
         }
         [HttpPost]
-        [SwaggerOperation(Summary = "Add or update Grade",
-            Description = "Add or update Grade dependency on IdGrade")]
-        [IMDMetodo(20231026100640, 20231026100652)]
+        //[SwaggerOperation(Summary = "Add or update Grade",
+        //    Description = "Add or update Grade dependency on IdGrade")]
         public async Task<ActionResult<ResultResponse<EntGrade>>> Post(CUGrade request)
         {
             ResultResponse<EntGrade> response = new ResultResponse<EntGrade>();
@@ -33,33 +40,26 @@ namespace API.Controllers
                 {
                     if (request.IdGrade == 0)
                     {
-                        EntGrade ent = new EntGrade();
-                        ent.Name = request.Name;
-                        ent.IdTeacher = request.IdTeacher;
-                        ResultResponse<EntGrade> res = await _busGrade.BCreate(ent);
+                        ResultResponse<EntGrade> res = await _busGrade.BCreate(request);
                         if (!res.HasError)
                         {
-                            response.SetSuccess(res.Result);
+                            response.SetSucesss(res.Result);
                         }
                         else
                         {
-                            response.SetError(res.Message);
+                            response.SetError(res.Mensaje);
                         }
                     }
                     else
                     {
-                        EntGrade ent = new EntGrade();
-                        ent.IdGrade = request.IdGrade;
-                        ent.Name = request.Name;
-                        ent.IdTeacher = request.IdTeacher;
-                        ResultResponse<EntGrade> res = await _busGrade.BUpdate(ent);
+                        ResultResponse<EntGrade> res = await _busGrade.BUpdate(request);
                         if (!res.HasError)
                         {
-                            response.SetSuccess(res.Result);
+                            response.SetSucesss(res.Result);
                         }
                         else
                         {
-                            response.SetError(res.Message);
+                            response.SetError(res.Mensaje);
                         }
                     }
                    
@@ -78,10 +78,9 @@ namespace API.Controllers
 
         }
 
-        [SwaggerOperation(Summary = "Lista de Grade",
-            Description = "Regresa una lista de Grade")]
+        //[SwaggerOperation(Summary = "Lista de Grade",
+        //    Description = "Regresa una lista de Grade")]
         [HttpGet("list")]
-        [IMDMetodo(67823462368441, 67823462367664)]
         public async Task<ActionResult<ResultResponse<dynamic>>> GetAll()
         {
             ResultResponse<object> response = new ResultResponse<object>();
@@ -92,23 +91,19 @@ namespace API.Controllers
                 var temp = await _busGrade.BGetAll();
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
-                response.ErrorCode = metodo.iCodigoError;
-                response.SetError(ex);
+                response.SetError(ex.Message);
 
-                _logger.LogError(IMDSerializer.Serialize(metodo.iCodigoError, $"Error en {metodo.sNombre}({metodo.sParametros}): {ex.Message}", ex, response));
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        [SwaggerOperation(Summary = "Get one Grade",
-            Description = "Get one Grade")]
+        //[SwaggerOperation(Summary = "Get one Grade",
+        //    Description = "Get one Grade")]
         [HttpGet("{IdGrade}")]
-        [IMDMetodo(67823462259630, 67823462258830)]
         public async Task<ActionResult<ResultResponse<dynamic>>> Get(int IdGrade)
         {
             ResultResponse<object> response = new ResultResponse<object>();
@@ -119,62 +114,60 @@ namespace API.Controllers
                 var temp = await _busGrade.BGet(IdGrade);
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
                 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
-        [SwaggerOperation(Summary = "Delete Grade",
-            Description = "Delete Grade by IdGrade")]
+        //[SwaggerOperation(Summary = "Delete Grade",
+        //    Description = "Delete Grade by IdGrade")]
         [HttpDelete("{IdGrade}")]
-        [IMDMetodo(67823462262730, 67823462261930)]
-        public async Task<ActionResult<IMDResponse<dynamic>>> Delete(int IdGrade)
+        public async Task<ActionResult<ResultResponse<dynamic>>> Delete(int IdGrade)
         {
             ResultResponse<object> response = new ResultResponse<object>();
 
             try
             {
-                var temp = await _busGrade.BDelete(IdChofer);
+                var temp = await _busGrade.BDelete(IdGrade);
                 response.Result = temp.Result;
                 response.HasError = temp.HasError;
-                response.HttpCode = temp.HttpCode;
-                response.Message = temp.Message;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
             }
             catch (Exception ex)
             {
 
             }
-            return StatusCode((int)response.HttpCode, response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPost("AddStudent")]
-        [SwaggerOperation(Summary = "Add Student to Grade",
-            Description = "Add Student to grade")]
+        //[SwaggerOperation(Summary = "Add Student to Grade",
+        //    Description = "Add Student to grade")]
 
-        public async Task<ActionResult<ResultResponse<dynamic>>> Post(CUGradeStudent request)
+        public async Task<ActionResult<ResultResponse<bool>>> AddStudentGrade(CUGradeStudent request)
         {
-            ResultResponse<EntGrade> response = new ResultResponse<EntGrade>();
+            ResultResponse<bool> response = new ResultResponse<bool>();
 
             try
             {
-                var validator = new EntValidatorGradeStudent();
+                var validator = new EntValidadorGradeStudent();
                 ValidationResult result = validator.Validate(request);
                 if (result.IsValid)
                 {
-                    CUGradeStudent ent = new CUGradeStudent();
-                    ResultResponse<bool> res = await _busGrade.BAddStudent(request.IdGrade, request.IdStudent);
+                    ResultResponse<bool> res = await _busGrade.BAddStudent(request);
                     if (!res.HasError)
                     {
-                        response.SetSuccess(res.Result);
+                        response.SetSucesss(res.Result);
                     }
                     else
                     {
-                        response.SetError(res.Message);
+                        response.SetError(res.Mensaje);
                     }
 
                 }
@@ -192,29 +185,28 @@ namespace API.Controllers
 
         }
 
-        [HttpPost("AddStudent")]
-        [SwaggerOperation(Summary = "Delete Student to Grade",
-             Description = "Delete Student to grade")]
-        [IMDMetodo(20231026100640, 20231026100652)]
-        public async Task<ActionResult<ResultResponse<dynamic>>> Post(CUGradeStudent request)
+        [HttpPost("RemoveStudent")]
+        //[SwaggerOperation(Summary = "Delete Student to Grade",
+        //     Description = "Delete Student to grade")]
+        public async Task<ActionResult<ResultResponse<EntGrade>>> DeleteStudentGrade(CUGradeStudent request)
         {
             ResultResponse<EntGrade> response = new ResultResponse<EntGrade>();
 
             try
             {
-                var validator = new EntValidatorGradeStudent();
+                var validator = new EntValidadorGradeStudent();
                 ValidationResult result = validator.Validate(request);
                 if (result.IsValid)
                 {
                     CUGradeStudent ent = new CUGradeStudent();
-                    ResultResponse<bool> res = await _busGrade.BRemoveStudent(request.IdGrade, request.IdStudent);
+                    ResultResponse<bool> res = await _busGrade.BRemoveStudent(request);
                     if (!res.HasError)
                     {
-                        response.SetSuccess(res.Result);
+                        response.SetSucesss(new EntGrade());
                     }
                     else
                     {
-                        response.SetError(res.Message);
+                        response.SetError(res.Mensaje);
                     }
 
                 }

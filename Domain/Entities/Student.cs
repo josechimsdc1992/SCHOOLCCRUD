@@ -14,6 +14,6 @@ namespace Domain.Entities
         public char Genero { get; set; }
         public DateTime Date {get;set;}
 
-        public ICollection<EntGrade> Grades { get; set; }
+        public ICollection<StudentGrade> StudentGrades { get; set; }
     }
 }

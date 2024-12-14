@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Entities.Grade;
 using Application.Entities.Student;
 
-namespace Application.Entities.GradeStudent
+using AutoMapper;
+
+namespace Application.Entities.Grade
 {
     public class EntGradeStudent
     {
@@ -17,5 +18,14 @@ namespace Application.Entities.GradeStudent
 
         public EntStudent Student { get; set; }
         public EntGrade Grade { get; set; }
+
+        public class Mapping : Profile
+        {
+            public Mapping()
+            {
+                CreateMap<Domain.Entities.StudentGrade, EntGradeStudent>();
+                CreateMap<EntGradeStudent, Domain.Entities.StudentGrade>();
+            }
+        }
     }
 }

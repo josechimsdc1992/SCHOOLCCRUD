@@ -11,7 +11,7 @@ namespace Application.Repository
 {
     public interface IBusGrade : IBusBase<EntGrade, CUGrade, CUGrade>
     {
-        Task<ResultResponse<bool>> BAddStudent(int IdGrade, int IdStudent);
-        Task<ResultResponse<bool>> BRemoveStudent(int IdGrade,int IdStudent);
+        Task<ResultResponse<bool>> BAddStudent(CUGradeStudent gradeStudent);
+        Task<ResultResponse<bool>> BRemoveStudent(CUGradeStudent gradeStudent);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Application.Cummon;
 
+using AutoMapper;
+
 using Domain.Entities;
 
 using Interfacess;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,7 +22,7 @@ namespace Infrastructure.Repository
     {
         protected SchoolContext _dbContext { get; }
         private readonly ILogger<DatGrade> _logger;
-        public DatGrade(SchoolContext dbContext, ILogger<DatGrade> logger)
+        public DatGrade(SchoolContext dbContext, ILogger<DatGrade> logger,IMapper mapper)
         {
             _dbContext = dbContext;
             _logger = logger;
@@ -35,6 +38,7 @@ namespace Infrastructure.Repository
                 if (entity != null)
                 {
                     _dbContext.Grades.Remove(entity);
+                    _dbContext.SaveChanges();
                     response.SetSucesss(true);
                 }
 
@@ -51,7 +55,22 @@ namespace Infrastructure.Repository
             var response = new ResultResponse<List<Grade>>();
             try
             {
-                var query = await _dbContext.Grades.AsNoTracking().ToListAsync();
+                var group = _dbContext.Grades.Include(x=>x.Teacher)
+                    .GroupJoin(_dbContext.StudentGrades.Include(x=>x.Student).AsNoTracking().AsQueryable(),
+                                                gra => gra.IdGrade,
+                                                studentgrades => studentgrades.IdGrade,
+                                                (gra, studentgrades) => new { gra, studentgrades }
+                                            )
+                                            .Select(a => new { a.gra, a.studentgrades }).ToList();
+
+
+                var query = group.Select(x =>
+                {
+                    Grade grade = x.gra;
+                    grade.StudentGrades=x.studentgrades.ToList();
+                    return grade;
+
+                }).ToList();
                 response.SetSucesss(query); 
             }
             catch (Exception ex)
@@ -127,6 +146,8 @@ namespace Infrastructure.Repository
             {
                 _dbContext.Grades.Attach(entity);
                 var entry = _dbContext.Entry(entity);
+                entry.Property(e => e.Name).IsModified = true;
+                entry.Property(e => e.IdTeacher).IsModified = true;
                 bool IsModified = entry.Properties.Where(e => e.IsModified).Count() > 0;
                 if (IsModified)
                 {

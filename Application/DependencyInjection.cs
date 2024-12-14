@@ -1,5 +1,9 @@
 ﻿using Application.Bussiness;
+using Application.Entities.Grade;
 using Application.Repository;
+using Interfaces;
+using Interfacess;
+
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -15,9 +19,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<IBusGrade, BusGrade>();
-        services.AddScoped<IBusStudent, BusStudent>();
-        services.AddScoped<IBusTeacher, BusTeacher>();
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+        
 
         return services;
     }

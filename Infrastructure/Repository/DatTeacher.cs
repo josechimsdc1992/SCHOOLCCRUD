@@ -38,6 +38,7 @@ namespace SchoolService.Infrastructure.Repository
                 if (entity != null)
                 {
                     _dbContext.Teachers.Remove(entity);
+                    _dbContext.SaveChanges();
                     response.SetSucesss(true);
                 }
 
@@ -130,6 +131,8 @@ namespace SchoolService.Infrastructure.Repository
             {
                 _dbContext.Teachers.Attach(entity);
                 var entry = _dbContext.Entry(entity);
+                entry.Property(e => e.Name).IsModified = true;
+                entry.Property(e => e.SurName).IsModified = true;
                 bool IsModified = entry.Properties.Where(e => e.IsModified).Count() > 0;
                 if (IsModified)
                 {

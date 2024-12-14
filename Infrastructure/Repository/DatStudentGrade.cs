@@ -35,6 +35,7 @@ namespace Infrastructure.Repository
                 if (entity != null)
                 {
                     _dbContext.StudentGrades.Remove(entity);
+                    _dbContext.SaveChanges();
                     response.SetSucesss(true);
                 }
 
@@ -77,12 +78,12 @@ namespace Infrastructure.Repository
 
             return response;
         }
-        public async Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade,int IdStudent)
+        public async Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade,int IdStudent,string Grupo)
         {
             var response = new ResultResponse<StudentGrade>();
             try
             {
-                var query = await _dbContext.StudentGrades.SingleOrDefaultAsync(u => u.IdStudentGrade == iKey && u.IdGrade== IdGrade);
+                var query = await _dbContext.StudentGrades.SingleOrDefaultAsync(u => u.IdGrade == IdGrade && u.IdStudent== IdStudent && u.Grupo == Grupo);
                 response.SetSucesss(query);
             }
             catch (Exception ex)
@@ -92,13 +93,14 @@ namespace Infrastructure.Repository
 
             return response;
         }
+       
 
         public async Task<ResultResponse<List<StudentGrade>>> DGetByGrade(int IdGrade)
         {
-            var response = new ResultResponse<StudentGrade>();
+            var response = new ResultResponse<List<StudentGrade>>();
             try
             {
-                var query = await _dbContext.StudentGrades.Where(u => u.IdGrade == IdGrade).ToList();
+                var query =  _dbContext.StudentGrades.Where(u => u.IdGrade == IdGrade).ToList();
                 response.SetSucesss(query);
             }
             catch (Exception ex)
