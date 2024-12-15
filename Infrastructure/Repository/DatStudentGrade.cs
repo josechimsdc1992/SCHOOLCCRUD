@@ -78,12 +78,12 @@ namespace Infrastructure.Repository
 
             return response;
         }
-        public async Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade,int IdStudent,string Grupo)
+        public async Task<ResultResponse<StudentGrade>> DGetByGradeStudentGrupo(int IdGrade,int IdStudent,string Grupo)
         {
             var response = new ResultResponse<StudentGrade>();
             try
             {
-                var query = await _dbContext.StudentGrades.SingleOrDefaultAsync(u => u.IdGrade == IdGrade && u.IdStudent== IdStudent && u.Grupo == Grupo);
+                var query = _dbContext.StudentGrades.Where(u => u.IdGrade == IdGrade && u.IdStudent== IdStudent && u.Grupo == Grupo).FirstOrDefault();
                 response.SetSucesss(query);
             }
             catch (Exception ex)
@@ -93,7 +93,22 @@ namespace Infrastructure.Repository
 
             return response;
         }
-       
+        public async Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade, int IdStudent)
+        {
+            var response = new ResultResponse<StudentGrade>();
+            try
+            {
+                var query = _dbContext.StudentGrades.Where(u => u.IdGrade == IdGrade && u.IdStudent == IdStudent).FirstOrDefault();
+                response.SetSucesss(query);
+            }
+            catch (Exception ex)
+            {
+                response.SetError(ex.Message);
+            }
+
+            return response;
+        }
+
 
         public async Task<ResultResponse<List<StudentGrade>>> DGetByGrade(int IdGrade)
         {
@@ -158,8 +173,10 @@ namespace Infrastructure.Repository
             var response = new ResultResponse<bool>();
             try
             {
+                _dbContext.ChangeTracker.Clear();
                 _dbContext.StudentGrades.Attach(entity);
                 var entry = _dbContext.Entry(entity);
+                entry.Property(e => e.Grupo).IsModified = true;
                 bool IsModified = entry.Properties.Where(e => e.IsModified).Count() > 0;
                 if (IsModified)
                 {

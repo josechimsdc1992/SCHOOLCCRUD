@@ -86,7 +86,23 @@ namespace Infrastructure.Repository
             var response = new ResultResponse<Grade>();
             try
             {
-                var query = await _dbContext.Grades.SingleOrDefaultAsync(u => u.IdGrade == iKey);
+                var group =  _dbContext.Grades.Include(x => x.Teacher)
+                    .GroupJoin(_dbContext.StudentGrades.Include(x => x.Student).AsNoTracking().AsQueryable(),
+                                                gra => gra.IdGrade,
+                                                studentgrades => studentgrades.IdGrade,
+                                                (gra, studentgrades) => new { gra, studentgrades }
+                                            )
+                                            .Select(a => new { a.gra, a.studentgrades }).ToList();
+
+
+                var query = group.Select(x =>
+                {
+                    Grade grade = x.gra;
+                    grade.StudentGrades = x.studentgrades.ToList();
+                    return grade;
+
+                }).SingleOrDefault(u => u.IdGrade == iKey);
+
                 response.SetSucesss(query);
             }
             catch (Exception ex)

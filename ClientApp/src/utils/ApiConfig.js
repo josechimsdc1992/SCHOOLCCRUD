@@ -8,3 +8,5 @@ export const apiListTeacher=`${apiTeacher}/list`;
 
 export const apiGrade=`${baseURL}/grade`;
 export const apiListGrade=`${apiGrade}/list`;
+export const apiListGradeDeleteStudent=`${apiGrade}/removeStudent`;
+export const apiListGradeSaveStudent=`${apiGrade}/addStudent`;

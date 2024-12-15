@@ -13,5 +13,6 @@ namespace Application.Repository
     {
         Task<ResultResponse<bool>> BAddStudent(CUGradeStudent gradeStudent);
         Task<ResultResponse<bool>> BRemoveStudent(CUGradeStudent gradeStudent);
+        Task<ResultResponse<EntGradeStudent>> BGetStudent(int idGrade,int idStudent);
     }
 }

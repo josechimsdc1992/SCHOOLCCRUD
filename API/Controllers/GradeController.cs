@@ -223,5 +223,27 @@ namespace API.Controllers
             return response;
 
         }
+        //[SwaggerOperation(Summary = "Get one Grade",
+        //    Description = "Get one Grade")]
+        [HttpGet("{IdGrade}/{IdStudent}")]
+        public async Task<ActionResult<ResultResponse<dynamic>>> Get(int IdGrade,int IdStudent)
+        {
+            ResultResponse<object> response = new ResultResponse<object>();
+
+
+            try
+            {
+                var temp = await _busGrade.BGetStudent(IdGrade,IdStudent);
+                response.Result = temp.Result;
+                response.HasError = temp.HasError;
+                response.StatusCode = temp.StatusCode;
+                response.Mensaje = temp.Mensaje;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return StatusCode((int)response.StatusCode, response);
+        }
     }
 }

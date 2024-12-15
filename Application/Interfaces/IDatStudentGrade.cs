@@ -13,7 +13,8 @@ namespace Interfaces
 {
     public interface IDatStudentGrade:IDatBase<StudentGrade>
     {
-        Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade, int IdStudent, string Grupo);
+        Task<ResultResponse<StudentGrade>> DGetByGradeStudentGrupo(int IdGrade, int IdStudent, string Grupo);
+        Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade, int IdStudent);
         Task<ResultResponse<List<StudentGrade>>> DGetByGrade(int IdGrade);
 
     }

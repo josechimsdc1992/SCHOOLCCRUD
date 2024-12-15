@@ -13,6 +13,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import StudentCU from './Pages/Students/StudentCU'
 import TeacherCU from './Pages/Teachers/TeacherCU'
 import GradeCU from './Pages/Grades/GradeCU'
+import GradeStudentCU from './Pages/Grades/GradeStudentCU'
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="teacher/:id" element={<TeacherCU />} />
           <Route path="grade" element={<Grade />} />
           <Route path="grade/:id" element={<GradeCU />} />
+          <Route path="grade/:idGrade/:idStudent" element={<GradeStudentCU />} />
         </Route>
       </Routes>
     </BrowserRouter>

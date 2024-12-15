@@ -17,6 +17,7 @@ namespace Application.Entities.Student
         public string SurName { get; set; }
         public char Genero { get; set; }
         public String Date { get; set; }
+        public string FullName { get { return Name + " " + SurName; } }
         public class Mapping : Profile
         {
             public Mapping()

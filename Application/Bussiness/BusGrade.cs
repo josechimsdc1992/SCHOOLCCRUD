@@ -93,12 +93,6 @@ namespace Application.Bussiness
             try
             {
                 var resData = await _datGrade.DGet(iKey);
-                if (resData.Result != null) {
-                    var resDetail = await _datstudentGrade.DGetByGrade(iKey);
-                    resData.Result.StudentGrades = resDetail.Result;
-                }
-               
-
                 response.SetSucesss(_mapper.Map<EntGrade>(resData.Result));
             }
             catch (Exception ex)
@@ -173,18 +167,29 @@ namespace Application.Bussiness
                 }
 
 
-                ResultResponse<StudentGrade> resStudentGrade =await _datstudentGrade.DGetByGradeStudent(gradeStudent.IdGrade,   gradeStudent.IdStudent,gradeStudent.Grupo);
-                if (resStudentGrade.Result != null)
-                {
-                    //error
-                }
+               
                 StudentGrade studentGrade = _mapper.Map<StudentGrade>(gradeStudent);
-                 var resCreate= _datstudentGrade.DSave(studentGrade);
-                if (!response.Result)
+                ResultResponse<StudentGrade> resStudentGrade = await _datstudentGrade.DGetByGradeStudent(gradeStudent.IdGrade, gradeStudent.IdStudent);
+                if (resStudentGrade.Result == null)
                 {
-                    response.SetError("No se ha borrado");
-                    return response;
+                    var resCreate =await _datstudentGrade.DSave(studentGrade);
+                    if (resCreate.HasError)
+                    {
+                        response.SetError("No se ha creado");
+                        return response;
+                    }
                 }
+                else
+                {
+                    studentGrade.IdStudentGrade = resStudentGrade.Result.IdStudentGrade;
+                    var resUpdate =await _datstudentGrade.DUpdate(studentGrade);
+                    if (!resUpdate.Result)
+                    {
+                        response.SetError("No se ha borrado");
+                        return response;
+                    }
+                }
+               
                 response.SetSucesss(true);
             }
             catch (Exception ex)
@@ -201,7 +206,7 @@ namespace Application.Bussiness
 
             try
             {
-                ResultResponse<StudentGrade> resStudentGrade =await _datstudentGrade.DGetByGradeStudent(gradeStudent.IdGrade, gradeStudent.IdStudent,gradeStudent.Grupo);
+                ResultResponse<StudentGrade> resStudentGrade =await _datstudentGrade.DGetByGradeStudentGrupo(gradeStudent.IdGrade, gradeStudent.IdStudent,gradeStudent.Grupo);
                 if(!response.HasError && response.Result!=null)
                 {
                     response = await _datstudentGrade.DDelete(resStudentGrade.Result.IdStudentGrade);
@@ -223,5 +228,23 @@ namespace Application.Bussiness
             return response;
         }
 
+        public async Task<ResultResponse<EntGradeStudent>> BGetStudent(int idGrade, int idStudent)
+        {
+            ResultResponse<EntGradeStudent> response = new ResultResponse<EntGradeStudent>();
+            string metodo = nameof(this.BGet);
+
+            try
+            {
+                var resData =await _datstudentGrade.DGetByGradeStudent(idGrade,idStudent);
+                EntGradeStudent student = new EntGradeStudent();
+                response.SetSucesss(_mapper.Map<EntGradeStudent>(resData.Result));
+            }
+            catch (Exception ex)
+            {
+                response.SetError(ex.Message);
+            }
+
+            return response;
+        }
     }
 }
