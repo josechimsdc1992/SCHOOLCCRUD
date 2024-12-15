@@ -132,6 +132,7 @@ namespace Infrastructure.Repository
                 entry.Property(e => e.Name).IsModified = true;
                 entry.Property(e => e.SurName).IsModified = true;
                 entry.Property(e => e.Date).IsModified = true;
+                entry.Property(e => e.Genero).IsModified = true;
                 bool IsModified = entry.Properties.Where(e => e.IsModified).Count() > 0;
                 if (IsModified)
                 {

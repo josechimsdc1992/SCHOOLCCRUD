@@ -5,8 +5,9 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
-const baseURL = "https://localhost:7091/student/list";
+const baseURL = "https://localhost:7091/student";
 
 function Student(){
     const navigate = useNavigate();
@@ -16,15 +17,25 @@ function Student(){
     const [visible, setVisible] = useState(null);
 
     useEffect(() => {
-        axios.get(baseURL).then((response) => {
-        setStudents(response.data.result);
-        });
+        loadData()
     }, []);
 
+    const loadData=()=>{
+        axios.get(`${baseURL}/list`).then((response) => {
+            setStudents(response.data.result);
+            });
+    }
+
     const handleDelete=(row)=>{
-        if(row){
-            console.log(row);
-        }
+        axios.delete(`${baseURL}/${row.idStudent}`).then((response) => {
+            if(!response.data.hasError){
+                loadData()
+                alertSuccess('Data deleted')
+            }else{
+                console.log(response.data.mensaje)
+            }
+            
+            });
     }
     const handleEdit=(row)=>{
         if(row){
@@ -34,6 +45,21 @@ function Student(){
     const handleNew=()=>{
         navigate(`/student/0`);
     }
+    const alertSuccess= async (text) => {
+        toast.success(text, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            }
+            );
+        
+    };
 
 return(
     <section className="page-section" id="services">
@@ -44,7 +70,7 @@ return(
                 </div>
                 <div className="row text-center">
                 <div className="col-md-4 text-left">
-                <   Button onClick={() => handleNew()} label="New" severity="success" />
+                <Button onClick={() => handleNew()} label="New" severity="success" />
                         
                 </div>
                 
@@ -68,6 +94,7 @@ return(
                 : <div></div>}
                 </div>
             </div>
+            <ToastContainer />
     </section>
 )
 }

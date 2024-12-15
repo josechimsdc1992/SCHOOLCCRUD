@@ -1,24 +1,23 @@
 import axios from "axios";
-import { Button } from "primereact/button"
-import { Column } from "primereact/column"
-import { ConfirmDialog } from "primereact/confirmdialog"
-import { DataTable } from "primereact/datatable"
+import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-const baseURL = "https://localhost:7091/grade/list";
+const baseURL = "https://localhost:7091/teacher/list";
 
-function Grade(){
+function Teacher(){
     const navigate = useNavigate();
     
-    const [grades, setGrades] = useState(null);
-    const [selectedGrades, setSelectedGrades] = useState(null);
+    const [teacher, setTeacher] = useState(null);
+    const [selectedStudent, setSelectedStudent] = useState(null);
     const [visible, setVisible] = useState(null);
 
     useEffect(() => {
         axios.get(baseURL).then((response) => {
-        setGrades(response.data.result);
-        console.log(response.data.result);
+        setTeacher(response.data.result);
         });
     }, []);
 
@@ -29,36 +28,35 @@ function Grade(){
     }
     const handleEdit=(row)=>{
         if(row){
-            navigate(`/grades/${row.idStudent}`);
+            navigate(`/teacher/${row.idStudent}`);
         }
     }
     const handleNew=()=>{
-        navigate(`/grades/0`);
+        navigate(`/teacher/0`);
     }
 
 return(
-    <section className="page-section" id="grade">
+    <section className="page-section" id="teacher">
             <div className="container">
                 <div className="text-center">
-                    <h2 className="section-heading text-uppercase">Grades</h2>
+                    <h2 className="section-heading text-uppercase">Teacher</h2>
                     <h3 className="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
                 </div>
                 <div className="row text-center">
                                 <div className="col-md-4 text-left">
-                                <Button onClick={() => handleNew()} label="New" severity="success" />   
+                                <   Button onClick={() => handleNew()} label="New" severity="success" />
+                                        
                                 </div>
                                 
-                                { grades ? 
-                                <DataTable value={grades} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single"  selection={selectedGrades} onSelectionChange={(e) => setSelectedGrades(e.value)} tableStyle={{ minWidth: '60rem' }}>
+                                { teacher ? 
+                                <DataTable value={teacher} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single"  selection={selectedStudent} onSelectionChange={(e) => setSelectedStudent(e.value)} tableStyle={{ minWidth: '60rem' }}>
                                 <Column field="name" header="Name"></Column>
-                                <Column header="Teacher Name" body={(row) => (
-                                    <>
-                                    <label>{row.teacher.name}</label>
-                                    </>
-                                    )}>
-                                </Column>
+                                <Column field="surName" header="SurName"></Column>
+                                <Column field="genero" header="Genero"></Column>
+                                <Column field="date" header="Date"></Column>
                                 <Column header="" body={(row) => (
                                     <>
+                                    
                                     <ConfirmDialog group="declarative"  visible={visible} onHide={() => setVisible(false)} message="Are you sure you want to delete?" 
                                         header="Confirmation" icon="pi pi-exclamation-triangle" accept={() => handleDelete(row) }  />
                                     <Button onClick={() => handleEdit(row)} icon="pi pi-check" label="Edit" severity="warning"/>
@@ -73,4 +71,4 @@ return(
         </section>
 )
 }
-export default Grade
+export default Teacher
