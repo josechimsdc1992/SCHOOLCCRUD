@@ -70,6 +70,12 @@ namespace Application.Bussiness
 
             try
             {
+                ResultResponse<bool> resValid = await _datstudentGrade.isUsedGrade(iKey);
+                if (resValid.Result)
+                {
+                    response.SetError("The grade already is used in Grade Student");
+                    return response;
+                }
                 response = await _datGrade.DDelete(iKey);
                 if (!response.Result)
                 {

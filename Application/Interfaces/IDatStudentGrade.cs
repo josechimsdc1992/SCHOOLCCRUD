@@ -17,6 +17,7 @@ namespace Interfaces
         Task<ResultResponse<StudentGrade>> DGetByGradeStudent(int IdGrade, int IdStudent);
         Task<ResultResponse<List<StudentGrade>>> DGetByGrade(int IdGrade);
         public Task<ResultResponse<bool>> isUsedStudent(int idStudent);
+        public Task<ResultResponse<bool>> isUsedGrade(int idGrade);
 
     }
 }

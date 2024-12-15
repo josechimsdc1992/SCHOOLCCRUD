@@ -1,4 +1,5 @@
 ﻿using Application.Cummon;
+using Application.Entities.Student;
 using Application.Entities.Teacher;
 
 using Domain.Entities;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repository
 {
-    public class DatStudentGrade:IDatStudentGrade
+    public class DatStudentGrade : IDatStudentGrade
     {
         protected SchoolContext _dbContext { get; }
         private readonly ILogger<DatStudentGrade> _logger;
@@ -204,6 +205,26 @@ namespace Infrastructure.Repository
             try
             {
                 int count = _dbContext.StudentGrades.Where(x => x.IdStudent == idStudent).Count();
+                if (count > 0)
+                {
+                    response.SetSucesss(true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return response;
+            }
+
+            return response;
+        }
+
+        public async Task<ResultResponse<bool>> isUsedGrade(int idGrade)
+        {
+            var response = new ResultResponse<bool>();
+            try
+            {
+                int count = _dbContext.StudentGrades.Where(x => x.IdGrade == idGrade).Count();
                 if (count > 0)
                 {
                     response.SetSucesss(true);
