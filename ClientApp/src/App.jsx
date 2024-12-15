@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { PrimeReactProvider } from 'primereact/api';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import StudentCU from './Pages/Students/StudentCU'
+import TeacherCU from './Pages/Teachers/TeacherCU'
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="student" element={<Student />} />
           <Route path="student/:id" element={<StudentCU />} />
           <Route path="teacher" element={<Teacher />} />
+          <Route path="teacher/:id" element={<TeacherCU />} />
           <Route path="grade" element={<Grade />} />
         </Route>
       </Routes>

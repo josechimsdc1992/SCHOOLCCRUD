@@ -5,35 +5,61 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { apiListTeacher, apiTeacher } from "../../utils/ApiConfig";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
-const baseURL = "https://localhost:7091/teacher/list";
 
 function Teacher(){
     const navigate = useNavigate();
     
     const [teacher, setTeacher] = useState(null);
-    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [visible, setVisible] = useState(null);
 
     useEffect(() => {
-        axios.get(baseURL).then((response) => {
-        setTeacher(response.data.result);
-        });
+        loadData()
     }, []);
 
+    const loadData=()=>{
+        axios.get(`${apiListTeacher}`).then((response) => {
+            setTeacher(response.data.result);
+            });
+    }
+
     const handleDelete=(row)=>{
-        if(row){
-            console.log(row);
-        }
+        axios.delete(`${apiTeacher}/${row.idTeacher}`).then((response) => {
+            if(!response.data.hasError){
+                loadData()
+                alertSuccess('Data deleted')
+            }else{
+                console.log(response.data.mensaje)
+            }
+            
+            });
     }
     const handleEdit=(row)=>{
         if(row){
-            navigate(`/teacher/${row.idStudent}`);
+            navigate(`/teacher/${row.idTeacher}`);
         }
     }
     const handleNew=()=>{
         navigate(`/teacher/0`);
     }
+    const alertSuccess= async (text) => {
+        toast.success(text, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            }
+            );
+        
+    };
 
 return(
     <section className="page-section" id="teacher">
@@ -49,11 +75,10 @@ return(
                                 </div>
                                 
                                 { teacher ? 
-                                <DataTable value={teacher} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single"  selection={selectedStudent} onSelectionChange={(e) => setSelectedStudent(e.value)} tableStyle={{ minWidth: '60rem' }}>
+                                <DataTable value={teacher} paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} selectionMode="single"  selection={selectedTeacher} onSelectionChange={(e) => setSelectedTeacher(e.value)} tableStyle={{ minWidth: '60rem' }}>
                                 <Column field="name" header="Name"></Column>
                                 <Column field="surName" header="SurName"></Column>
                                 <Column field="genero" header="Genero"></Column>
-                                <Column field="date" header="Date"></Column>
                                 <Column header="" body={(row) => (
                                     <>
                                     
@@ -68,6 +93,7 @@ return(
                                 : <div></div>}
                                 </div>
             </div>
+            <ToastContainer />
         </section>
 )
 }

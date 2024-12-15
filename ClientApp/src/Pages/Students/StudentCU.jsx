@@ -7,8 +7,7 @@ import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Bounce, toast, ToastContainer } from "react-toastify";
-
-const baseURL = "https://localhost:7091/student";
+import { apiStudent } from "../../utils/ApiConfig";
 
 const getEditarForm = () => ({
     idStudent: { value: 0, error: false },
@@ -33,7 +32,7 @@ function StudentCU(){
     
     useEffect(() => {
         if(param.id!=0){
-            axios.get(`${baseURL}/${param.id}`).then((response) => {
+            axios.get(`${apiStudent}/${param.id}`).then((response) => {
                 if(!response.data.hasError){
                     loadForm(response.data.result)
                 }else{
@@ -70,7 +69,7 @@ function StudentCU(){
 
         
         axios
-        .post(`${baseURL}`, student)
+        .post(`${apiStudent}`, student)
         .then((response) => {
             if(!response.data.hasError){
                 console.log(response.data)
