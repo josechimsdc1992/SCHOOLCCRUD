@@ -7,4 +7,4 @@ export const apiTeacher=`${baseURL}/teacher`;
 export const apiListTeacher=`${apiTeacher}/list`;
 
 export const apiGrade=`${baseURL}/grade`;
-export const apiListGrade=`${apiStudent}/list`;
+export const apiListGrade=`${apiGrade}/list`;

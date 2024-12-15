@@ -5,13 +5,14 @@ import Layout from './Pages/Layout'
 import Home from './Pages/Home'
 import Student from './Pages/Students/Student'
 import Teacher from './Pages/Teachers/Teacher'
-import Grade from './Pages/Grade'
+import Grade from './Pages/Grades/Grade'
 import './App.css'
 import 'react-toastify/dist/ReactToastify.css';
 import { PrimeReactProvider } from 'primereact/api';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import StudentCU from './Pages/Students/StudentCU'
 import TeacherCU from './Pages/Teachers/TeacherCU'
+import GradeCU from './Pages/Grades/GradeCU'
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="teacher" element={<Teacher />} />
           <Route path="teacher/:id" element={<TeacherCU />} />
           <Route path="grade" element={<Grade />} />
+          <Route path="grade/:id" element={<GradeCU />} />
         </Route>
       </Routes>
     </BrowserRouter>

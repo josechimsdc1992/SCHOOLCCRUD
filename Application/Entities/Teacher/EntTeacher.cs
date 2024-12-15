@@ -15,6 +15,7 @@ namespace Application.Entities.Teacher
         public int IdTeacher { get; set; }
         public string Name { get; set; }
         public string SurName { get; set; }
+        public string FullName { get { return Name + " " + SurName; } }
         public char Genero { get; set; }
         public class Mapping : Profile
         {

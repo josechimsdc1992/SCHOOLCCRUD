@@ -5,8 +5,9 @@ import { ConfirmDialog } from "primereact/confirmdialog"
 import { DataTable } from "primereact/datatable"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { apiGrade, apiListGrade } from "../../utils/ApiConfig";
+import { Bounce, toast } from "react-toastify";
 
-const baseURL = "https://localhost:7091/grade/list";
 
 function Grade(){
     const navigate = useNavigate();
@@ -16,25 +17,49 @@ function Grade(){
     const [visible, setVisible] = useState(null);
 
     useEffect(() => {
-        axios.get(baseURL).then((response) => {
-        setGrades(response.data.result);
-        console.log(response.data.result);
-        });
+        loadData()
     }, []);
 
+    const loadData=()=>{
+        axios.get(`${apiListGrade}`).then((response) => {
+            setGrades(response.data.result);
+            });
+    }
+
     const handleDelete=(row)=>{
-        if(row){
-            console.log(row);
-        }
+        axios.delete(`${apiGrade}/${row.idGrade}`).then((response) => {
+            if(!response.data.hasError){
+                loadData()
+                alertSuccess('Data deleted')
+            }else{
+                console.log(response.data.mensaje)
+            }
+            
+            });
     }
     const handleEdit=(row)=>{
         if(row){
-            navigate(`/grades/${row.idStudent}`);
+            navigate(`/grade/${row.idGrade}`);
         }
     }
     const handleNew=()=>{
-        navigate(`/grades/0`);
+        navigate(`/grade/0`);
     }
+    const alertSuccess= async (text) => {
+        toast.success(text, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            }
+            );
+        
+    };
 
 return(
     <section className="page-section" id="grade">
@@ -53,7 +78,7 @@ return(
                                 <Column field="name" header="Name"></Column>
                                 <Column header="Teacher Name" body={(row) => (
                                     <>
-                                    <label>{row.teacher.name}</label>
+                                    <label>{row.teacher.name} {row.teacher.surName}</label>
                                     </>
                                     )}>
                                 </Column>

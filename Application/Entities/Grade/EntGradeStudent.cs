@@ -17,7 +17,6 @@ namespace Application.Entities.Grade
         public string Grupo { get; set; }
 
         public EntStudent Student { get; set; }
-        public EntGrade Grade { get; set; }
 
         public class Mapping : Profile
         {
