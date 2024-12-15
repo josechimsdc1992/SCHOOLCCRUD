@@ -6,8 +6,7 @@ import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Bounce, toast, ToastContainer } from "react-toastify";
-
-const baseURL = "https://localhost:7091/student";
+import { apiListStudent, apiStudent } from "../../utils/ApiConfig";
 
 function Student(){
     const navigate = useNavigate();
@@ -21,13 +20,13 @@ function Student(){
     }, []);
 
     const loadData=()=>{
-        axios.get(`${baseURL}/list`).then((response) => {
+        axios.get(`${apiListStudent}`).then((response) => {
             setStudents(response.data.result);
             });
     }
 
     const handleDelete=(row)=>{
-        axios.delete(`${baseURL}/${row.idStudent}`).then((response) => {
+        axios.delete(`${apiStudent}/${row.idStudent}`).then((response) => {
             if(!response.data.hasError){
                 loadData()
                 alertSuccess('Data deleted')

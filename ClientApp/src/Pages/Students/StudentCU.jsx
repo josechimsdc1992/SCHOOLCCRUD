@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Badge } from "primereact/badge";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
@@ -23,6 +24,7 @@ function StudentCU(){
     let param = useParams();
 
     const [form, setForm] = useState(getEditarForm());
+    const [hasError,setHasError]=useState(false)
 
     const genders= [
         {label: 'Female', value: 'F'},
@@ -50,6 +52,10 @@ function StudentCU(){
 
     const handleSave=()=>{
 
+        handleValidate()
+
+        if(hasError)
+            return;
         const date = form.date.value
         const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
@@ -78,6 +84,27 @@ function StudentCU(){
         
     }
 
+    const handleValidate=()=>{
+        setHasError(false)
+
+        if(form.name.value==""){
+            setHasError(true)
+            form.name.error=true;
+        }
+        if(form.surName.value==""){
+            setHasError(true)
+            form.surName.error=true;
+        }
+        if(form.genero.value==""){
+            setHasError(true)
+            form.genero.error=true;
+        }
+        if(form.date.value==""){
+            setHasError(true)
+            form.date.error=true;
+        }
+    }
+
     const alertSuccess= async (text) => {
         toast.success(text, {
             position: "top-right",
@@ -95,11 +122,15 @@ function StudentCU(){
     };
 
     const handleChangeForm = async (e) => {
+        let error=false
+        if(e.target.value==""){
+            error=true
+        }
         setForm({
             ...form,
             [e.target.name]: {
               value: e.target.value,
-              error: false,
+              error: error,
             },
           });
         
@@ -132,20 +163,23 @@ function StudentCU(){
                         <div className="flex flex-column gap-2">
                             <label htmlFor="name">Name</label>
                             <InputText id="name" name="name"  value={form.name.value}  onChange={(e) => handleChangeForm(e)}/>
+                            { form.name.error ? <Badge value="Required" severity="danger"></Badge> :<></> }
+                            
                         </div>
                         <div className="flex flex-column gap-2">
                             <label htmlFor="surname">Sur Name</label>
                             <InputText id="surname" name="surName" value={form.surName.value}  onChange={(e) => handleChangeForm(e)}/>
-                            
+                            { form.surName.error ? <Badge value="Required" severity="danger"></Badge> :<></> }
                         </div>
                         <div className="flex flex-column gap-2">
                             <label htmlFor="gender">Gender</label>
                             <Dropdown optionLabel="label" name="genero" value={form.genero.value} options={genders} onChange={(e) => handleChangeForm(e)} placeholder="Select a Gender"/>
-                            
+                            { form.genero.error ? <Badge value="Required" severity="danger"></Badge> :<></> }
                         </div>
                         <div className="flex flex-column gap-2">
                             <label htmlFor="date">Date Born</label>
                             <Calendar dateFormat="dd/mm/yy" name="date" value={form.date.value} onChange={(e) => handleChangeForm(e)}></Calendar>
+                            { form.date.error ? <Badge value="Required" severity="danger"></Badge> :<></> }
                         </div>
                         <div className="col-md-4 text-left">
                         <Button onClick={() => handleSave()} label="Save" severity="success" />
