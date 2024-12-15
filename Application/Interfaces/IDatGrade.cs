@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Cummon;
+using Application.Interfaces;
 
 using Domain.Entities;
 
@@ -12,6 +13,6 @@ namespace Interfacess
 {
     public interface IDatGrade:IDatBase<Grade>
     {
-
+        public Task<ResultResponse<bool>> isUsedTeacher(int idTeacher); 
     }
 }

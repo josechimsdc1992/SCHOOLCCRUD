@@ -25,11 +25,13 @@ namespace Application.Bussiness
         private readonly ILogger<BusTeacher> _logger;
         private readonly IDatTeacher _datTeacher;
         private readonly IMapper _mapper;
-        public BusTeacher(ILogger<BusTeacher> logger, IDatTeacher datTeacher,IMapper mapper)
+        private readonly IDatGrade _datGrade;
+        public BusTeacher(ILogger<BusTeacher> logger, IDatTeacher datTeacher,IMapper mapper, IDatGrade datGrade)
         {
             this._logger = logger;
             this._datTeacher = datTeacher;
             this._mapper = mapper;
+            _datGrade = datGrade;
         }
         public async Task<ResultResponse<EntTeacher>> BCreate(CUTeacher createModel)
         {
@@ -66,6 +68,12 @@ namespace Application.Bussiness
 
             try
             {
+                ResultResponse<bool> resValid = await _datGrade.isUsedTeacher(iKey);
+                if (resValid.Result)
+                {
+                    response.SetError("The techear already is used in Grade");
+                    return response;
+                }
                 response = await _datTeacher.DDelete(iKey);
                 if (!response.Result)
                 {

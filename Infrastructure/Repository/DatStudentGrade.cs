@@ -1,4 +1,5 @@
 ﻿using Application.Cummon;
+using Application.Entities.Teacher;
 
 using Domain.Entities;
 
@@ -197,5 +198,24 @@ namespace Infrastructure.Repository
             return response;
         }
 
+        public async Task<ResultResponse<bool>> isUsedStudent(int idStudent)
+        {
+            var response = new ResultResponse<bool>();
+            try
+            {
+                int count = _dbContext.StudentGrades.Where(x => x.IdStudent == idStudent).Count();
+                if (count > 0)
+                {
+                    response.SetSucesss(true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return response;
+            }
+
+            return response;
+        }
     }
 }

@@ -27,14 +27,18 @@ function Teacher(){
     }
 
     const handleDelete=(row)=>{
-        axios.delete(`${apiTeacher}/${row.idTeacher}`).then((response) => {
+        axios.delete(`${apiTeacher}/${row.idTeacher}`)
+        .then((response) => {
             if(!response.data.hasError){
                 loadData()
                 alertSuccess('Data deleted')
             }else{
-                console.log(response.data.mensaje)
+                alertWarning(response.data.mensaje);
             }
             
+            })
+            .catch((res)=>{
+                alertWarning(res.response.data.mensaje);
             });
     }
     const handleEdit=(row)=>{
@@ -61,6 +65,23 @@ function Teacher(){
         
     };
 
+    const alertWarning= async (text) => {
+        toast.warn(text, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            });
+    
+        
+    };
+
+    
 return(
     <section className="page-section" id="teacher">
             <div className="container">

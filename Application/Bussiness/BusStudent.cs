@@ -10,6 +10,8 @@ using Domain.Entities;
 
 using Interfaces;
 
+using Interfacess;
+
 using Microsoft.Extensions.Logging;
 
 using System;
@@ -24,12 +26,14 @@ namespace Application.Bussiness
     {
         private readonly ILogger<BusStudent> _logger;
         private readonly IDatStudent _datStudent;
+        private readonly IDatStudentGrade _datStudentGrade;
         private readonly IMapper _mapper;
-        public BusStudent(ILogger<BusStudent> logger, IDatStudent datStudent,IMapper mapper)
+        public BusStudent(ILogger<BusStudent> logger, IDatStudent datStudent,IMapper mapper, IDatStudentGrade datStudentGrade)
         {
             this._logger = logger;
             this._datStudent = datStudent;
             this._mapper = mapper;
+            _datStudentGrade = datStudentGrade;
         }
         public async Task<ResultResponse<EntStudent>> BCreate(CUStudent createModel)
         {
@@ -66,6 +70,12 @@ namespace Application.Bussiness
 
             try
             {
+                ResultResponse<bool> resValid = await _datStudentGrade.isUsedStudent(iKey);
+                if (resValid.Result)
+                {
+                    response.SetError("The Student already is used in Grade");
+                    return response;
+                }
                 response = await _datStudent.DDelete(iKey);
                 if (!response.Result)
                 {

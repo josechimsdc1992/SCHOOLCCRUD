@@ -34,6 +34,9 @@ function Student(){
                 console.log(response.data.mensaje)
             }
             
+            }).catch((res)=>{
+                console.log(res)
+                alertWarning(res.response.data.mensaje);
             });
     }
     const handleEdit=(row)=>{
@@ -59,6 +62,22 @@ function Student(){
             );
         
     };
+
+    const alertWarning= async (text) => {
+            toast.warn(text, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+                });
+        
+            
+        };
 
 return(
     <section className="page-section" id="services">

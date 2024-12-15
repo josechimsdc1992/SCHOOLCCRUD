@@ -183,5 +183,24 @@ namespace Infrastructure.Repository
 
             return response;
         }
+
+        public async Task<ResultResponse<bool>> isUsedTeacher(int idTeacher)
+        {
+            var response = new ResultResponse<bool>();
+            try
+            {
+                int count= _dbContext.Grades.Where(x => x.IdTeacher == idTeacher).Count();
+                if (count > 0) { 
+                response.SetSucesss(true);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return response;
+            }
+
+            return response;
+        }
     }
 }
