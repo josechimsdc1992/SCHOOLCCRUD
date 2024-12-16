@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { apiGrade, apiListGradeDeleteStudent, apiListStudent, apiListTeacher, apiStudent } from "../../utils/ApiConfig";
+import { apiGrade, apiListGradeDeleteStudent, apiListTeacher } from "../../utils/ApiConfig";
 import axios from "axios";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { Button } from "primereact/button";
